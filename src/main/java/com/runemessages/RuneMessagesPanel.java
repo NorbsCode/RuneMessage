@@ -76,8 +76,9 @@ public class RuneMessagesPanel extends PluginPanel
 			"in the corner", "at the edge", "in the middle", "on the path", "off the path",
 			"underground", "upstairs", "downstairs", "inside", "outside", "beyond",
 			"at Lumbridge", "at Varrock", "at Falador", "at Camelot", "at Ardougne",
-			"in the Wilderness", "at the G.E.", "at the bank", "in the dungeon",
-			"at the altar", "by the fountain", "near the tree", "by the rocks"
+			"in the Wilderness", "at the G.E.", "at the Grand Exchange", "Grand Exchange",
+			"at the bank", "in the dungeon", "at the altar", "by the fountain",
+			"near the tree", "by the rocks"
 		});
 		WORD_CATEGORIES.put("Things", new String[] {
 			"enemy", "enemies", "boss", "monster", "creature", "NPC", "player",
@@ -200,6 +201,27 @@ public class RuneMessagesPanel extends PluginPanel
 			"Praise be", "Blessed be", "May RNG be with you", "GL HF",
 			"No pain no gain", "Risk it for the biscuit", "Send it",
 			"LEROY JENKINS", "At least I have chicken"
+		});
+		WORD_CATEGORIES.put("Famous People", new String[] {
+			// Jagex Staff
+			"Mod Ash", "God Ash", "The Ash", "Mod Archie", "Mod Arcane", "Mod Ayiza",
+			"Mod Boko", "Mod Bruno", "Mod Curse", "Mod Ed", "Mod Elena", "Mod Goblin",
+			"Mod Husky", "Mod Kieren", "Mod Light", "Mod Lottie", "Mod Mack",
+			"Mod Oasis", "Mod Sarnie", "Mod Squid", "Mod Sween", "Mod Tide", "Mod West",
+			"Mod Roq", "Mod Flippy", "Mod Abyss", "Mod Crystal", "Mod Daizong",
+			// Legendary Players
+			"Zezima", "Woox", "Lynx Titan", "Hey Jase", "Suomi",
+			// Content Creators
+			"B0aty", "Settled", "Swampletics", "C Engineer", "Mudkip", "Torvesta",
+			"Framed", "Skill Specs", "A Friend", "Dovydas", "J1mmy", "9Rain",
+			"SoloMission", "EVscape", "Tanzoo", "Virtoso", "Faux", "Sick Nerd",
+			"Rendi", "Dino", "FlippingOldschool", "Alfie", "Odablock", "Purespam",
+			"Mmorpg", "Theoatrix", "Slayermusiq1", "Soup", "Spookdog", "Jakeyosaurus",
+			"KempQ", "Ricecup", "Vannaka", "Westham", "Gunschilli", "25 Buttholes",
+			"Lower the Better", "Verf", "UIM Lenny", "xRakine", "WildMudkip",
+			// Meme References
+			"Durial321", "the Falador Massacre", "a Jmod", "a famous player",
+			"a streamer", "a YouTuber", "a content creator", "a legend"
 		});
 	}
 
