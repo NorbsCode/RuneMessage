@@ -51,6 +51,10 @@ The API key can be found in the plugin settings under the "Account" section.
 4. Click "Write" to place your message at your current location
 5. Other players will see your message when they enter the area
 
+https://github.com/user-attachments/assets/08dec20e-98b0-4d3e-b086-9f694d926162
+
+
+
 ## Rate Limits
 
 To keep things fair and prevent spam:
