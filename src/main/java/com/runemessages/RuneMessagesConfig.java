@@ -96,20 +96,11 @@ public interface RuneMessagesConfig extends Config
 		return true;
 	}
 
-	@ConfigSection(
-		name = "Account",
-		description = "Your RuneMessages account information. WARNING: Save your API key somewhere safe! If you reinstall RuneLite, you will need it to recover access to your messages.",
-		position = 20
-	)
-	String accountSection = "accountSection";
-
 	@ConfigItem(
 		keyName = "apiKey",
-		name = "API Key (DO NOT EDIT)",
-		description = "Your unique API key. SAVE THIS KEY! You need it to recover your account after a fresh reinstall. Do not share this key with anyone.",
-		position = 21,
-		section = accountSection,
-		warning = "Do not edit this field. Save this key somewhere safe to recover your account."
+		name = "API Key",
+		description = "Your unique API key",
+		hidden = true
 	)
 	default String apiKey()
 	{
@@ -118,11 +109,9 @@ public interface RuneMessagesConfig extends Config
 
 	@ConfigItem(
 		keyName = "registeredUsername",
-		name = "Registered Username (DO NOT EDIT)",
-		description = "The username this API key is registered to. This is set automatically.",
-		position = 22,
-		section = accountSection,
-		warning = "Do not edit this field. It is set automatically when you log in."
+		name = "Registered Username",
+		description = "The username this API key is registered to",
+		hidden = true
 	)
 	default String registeredUsername()
 	{

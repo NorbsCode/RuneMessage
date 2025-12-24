@@ -56,6 +56,9 @@ public class RuneMessagesPanel extends PluginPanel
 	private static final int MAX_MESSAGE_LENGTH = 100;
 	private static final Map<String, String[]> WORD_CATEGORIES = new LinkedHashMap<>();
 
+	private JLabel apiKeyValueLabel;
+	private JLabel usernameValueLabel;
+
 	static
 	{
 		WORD_CATEGORIES.put("Actions", new String[] {
@@ -422,13 +425,100 @@ public class RuneMessagesPanel extends PluginPanel
 		myMessagesSection.add(myMessagesHeader, BorderLayout.CENTER);
 		myMessagesSection.add(myMessagesScrollPane, BorderLayout.SOUTH);
 
+		// Account Info Section
+		JPanel accountSection = new JPanel(new BorderLayout(0, 5));
+		accountSection.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		accountSection.setBorder(new EmptyBorder(10, 0, 0, 0));
+
+		JSeparator accountSeparator = new JSeparator();
+		accountSeparator.setForeground(ColorScheme.MEDIUM_GRAY_COLOR);
+
+		JLabel accountTitleLabel = new JLabel("Account Info");
+		accountTitleLabel.setForeground(new Color(255, 215, 0));
+		accountTitleLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
+
+		JPanel accountInfoPanel = new JPanel();
+		accountInfoPanel.setLayout(new BoxLayout(accountInfoPanel, BoxLayout.Y_AXIS));
+		accountInfoPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		accountInfoPanel.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createLineBorder(ColorScheme.MEDIUM_GRAY_COLOR),
+			BorderFactory.createEmptyBorder(8, 8, 8, 8)
+		));
+
+		JPanel usernameRow = new JPanel(new BorderLayout(5, 0));
+		usernameRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		JLabel usernameLabel = new JLabel("Username:");
+		usernameLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+		usernameValueLabel = new JLabel("Not registered");
+		usernameValueLabel.setForeground(Color.WHITE);
+		usernameRow.add(usernameLabel, BorderLayout.WEST);
+		usernameRow.add(usernameValueLabel, BorderLayout.CENTER);
+
+		JPanel apiKeyRow = new JPanel(new BorderLayout(5, 0));
+		apiKeyRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		apiKeyRow.setBorder(new EmptyBorder(5, 0, 0, 0));
+		JLabel apiKeyLabel = new JLabel("API Key:");
+		apiKeyLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+		apiKeyValueLabel = new JLabel("Not registered");
+		apiKeyValueLabel.setForeground(Color.WHITE);
+		apiKeyValueLabel.setToolTipText("Save this key to recover your account after reinstall");
+		apiKeyRow.add(apiKeyLabel, BorderLayout.WEST);
+		apiKeyRow.add(apiKeyValueLabel, BorderLayout.CENTER);
+
+		JLabel warningLabel = new JLabel("<html><i>Save your API key to recover access after reinstall!</i></html>");
+		warningLabel.setForeground(new Color(255, 200, 100));
+		warningLabel.setFont(warningLabel.getFont().deriveFont(10f));
+		warningLabel.setBorder(new EmptyBorder(8, 0, 0, 0));
+
+		accountInfoPanel.add(usernameRow);
+		accountInfoPanel.add(apiKeyRow);
+		accountInfoPanel.add(warningLabel);
+
+		accountSection.add(accountSeparator, BorderLayout.NORTH);
+		accountSection.add(accountTitleLabel, BorderLayout.CENTER);
+		accountSection.add(accountInfoPanel, BorderLayout.SOUTH);
+
+		// Bottom wrapper for My Messages and Account Info
+		JPanel bottomWrapper = new JPanel();
+		bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
+		bottomWrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		bottomWrapper.add(myMessagesSection);
+		bottomWrapper.add(accountSection);
+
 		JPanel mainWrapper = new JPanel(new BorderLayout());
 		mainWrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		mainWrapper.add(contentPanel, BorderLayout.CENTER);
-		mainWrapper.add(myMessagesSection, BorderLayout.SOUTH);
+		mainWrapper.add(bottomWrapper, BorderLayout.SOUTH);
 
 		add(titleLabel, BorderLayout.NORTH);
 		add(mainWrapper, BorderLayout.CENTER);
+
+		// Initial update of account info
+		updateAccountInfo();
+	}
+
+	public void updateAccountInfo() {
+		String apiKey = plugin.getMessageService().getApiKey();
+		String username = plugin.getCurrentPlayerName();
+
+		if (apiKey != null && !apiKey.isEmpty()) {
+			// Show first 8 and last 4 characters for security
+			if (apiKey.length() > 12) {
+				apiKeyValueLabel.setText(apiKey.substring(0, 8) + "..." + apiKey.substring(apiKey.length() - 4));
+			} else {
+				apiKeyValueLabel.setText(apiKey);
+			}
+			apiKeyValueLabel.setToolTipText(apiKey + " (click to copy - save this key!)");
+		} else {
+			apiKeyValueLabel.setText("Not registered");
+			apiKeyValueLabel.setToolTipText("Log in to register automatically");
+		}
+
+		if (username != null && !username.isEmpty()) {
+			usernameValueLabel.setText(username);
+		} else {
+			usernameValueLabel.setText("Not logged in");
+		}
 	}
 
 	private void filterWords() {
