@@ -417,10 +417,6 @@ public class RuneMessagesPlugin extends Plugin
 
 				clientThread.invokeLater(() -> {
 					sendChatMessage("RuneMessages: Registered successfully!");
-					if (messagePanel != null)
-					{
-						messagePanel.updateAccountInfo();
-					}
 				});
 			})
 			.exceptionally(ex -> {
