@@ -219,11 +219,39 @@ public class RuneMessagesPlugin extends Plugin
 			return;
 		}
 
-		// Try to register if we haven't already and don't have an API key
-		if (!registrationAttempted && (messageService.getApiKey() == null || messageService.getApiKey().isEmpty()))
+		// Try to register if we haven't already
+		if (!registrationAttempted)
 		{
-			registrationAttempted = true;
-			tryRegister();
+			// Check if we need to register: no API key OR username mismatch
+			boolean needsRegistration = messageService.getApiKey() == null || messageService.getApiKey().isEmpty();
+
+			if (!needsRegistration)
+			{
+				// Have API key, but check if username matches current player
+				Player localPlayer = client.getLocalPlayer();
+				if (localPlayer != null && localPlayer.getName() != null)
+				{
+					String savedUsername = config.registeredUsername();
+					if (!savedUsername.isEmpty() && !savedUsername.equalsIgnoreCase(localPlayer.getName()))
+					{
+						// Different player logged in - need to re-register
+						needsRegistration = true;
+						log.info("Different player detected (saved: {}, current: {}), re-registering",
+							savedUsername, localPlayer.getName());
+					}
+				}
+			}
+
+			if (needsRegistration)
+			{
+				registrationAttempted = true;
+				tryRegister();
+			}
+			else
+			{
+				// API key valid and username matches - no need to register
+				registrationAttempted = true;
+			}
 		}
 
 		// Check for new regions and load messages
