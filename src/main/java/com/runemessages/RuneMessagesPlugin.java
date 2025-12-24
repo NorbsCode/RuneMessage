@@ -107,7 +107,7 @@ public class RuneMessagesPlugin extends Plugin
 	private ConfigManager configManager;
 
 	private static final String CONFIG_GROUP = "runemessages";
-	private static final int MAX_MESSAGES_PER_REGION = 50;
+	private static final int MAX_MESSAGES_PER_REGION = 30;
 	private static final int TOP_VOTED_COUNT = 10;
 	private static final int MAX_AUTHOR_MESSAGES_PER_REGION = 1;
 	private static final int MAX_AUTHOR_MESSAGES_PER_WORLD = 5;
@@ -263,6 +263,34 @@ public class RuneMessagesPlugin extends Plugin
 
 		int worldId = client.getWorld();
 
+		// Convert to set for easy lookup
+		Set<Integer> currentRegions = new HashSet<>();
+		for (int r : regions)
+		{
+			currentRegions.add(r);
+		}
+
+		// Clear regions that are no longer visible - this allows fresh loading when returning
+		Set<Integer> regionsToRemove = new HashSet<>();
+		for (Integer loadedRegion : loadedRegions)
+		{
+			if (!currentRegions.contains(loadedRegion))
+			{
+				regionsToRemove.add(loadedRegion);
+			}
+		}
+		for (Integer regionToRemove : regionsToRemove)
+		{
+			loadedRegions.remove(regionToRemove);
+			// Also clear the cache for this region
+			String cacheKey = worldId + ":" + regionToRemove;
+			regionMessageCache.remove(cacheKey);
+		}
+
+		// Clean up messages from regions no longer in view
+		cleanupDistantMessages(currentRegions);
+
+		// Load new regions
 		for (int region : regions)
 		{
 			if (!loadedRegions.contains(region))
@@ -274,6 +302,46 @@ public class RuneMessagesPlugin extends Plugin
 
 		// Re-spawn graves that went out of view and came back
 		refreshGraves();
+	}
+
+	/**
+	 * Remove messages from regions that are no longer in view
+	 */
+	private void cleanupDistantMessages(Set<Integer> currentRegions)
+	{
+		List<String> messagesToRemove = new ArrayList<>();
+
+		for (Map.Entry<String, MessageData> entry : messageDataMap.entrySet())
+		{
+			MessageData message = entry.getValue();
+			if (!currentRegions.contains(message.getRegionId()))
+			{
+				messagesToRemove.add(entry.getKey());
+			}
+		}
+
+		for (String messageId : messagesToRemove)
+		{
+			// Deactivate and remove the grave
+			RuneLiteObject grave = spawnedGraves.remove(messageId);
+			if (grave != null)
+			{
+				grave.setActive(false);
+			}
+
+			// Remove from message data and occupied locations
+			MessageData data = messageDataMap.remove(messageId);
+			if (data != null)
+			{
+				String locationKey = data.getX() + "," + data.getY() + "," + data.getPlane();
+				occupiedLocations.remove(locationKey);
+			}
+		}
+
+		if (!messagesToRemove.isEmpty())
+		{
+			log.debug("Cleaned up {} messages from distant regions", messagesToRemove.size());
+		}
 	}
 
 	private void refreshGraves()
@@ -780,21 +848,12 @@ public class RuneMessagesPlugin extends Plugin
 			return;
 		}
 
-		String cacheKey = worldId + ":" + regionId;
-
-		// Check if we already have this world+region cached
-		if (regionMessageCache.containsKey(cacheKey))
-		{
-			// Use cached data, just spawn the messages
-			clientThread.invokeLater(() -> spawnMessagesFromCache(worldId, regionId));
-			return;
-		}
-
-		// Fetch from Firebase and cache
+		// Always fetch fresh from API - this ensures random selection each visit
 		messageService.getMessagesForRegion(worldId, regionId)
 			.thenAccept(messages ->
 			{
-				// Cache the raw messages for this world+region
+				// Store temporarily for spawning
+				String cacheKey = worldId + ":" + regionId;
 				regionMessageCache.put(cacheKey, new ArrayList<>(messages));
 
 				clientThread.invokeLater(() -> spawnMessagesFromCache(worldId, regionId));
