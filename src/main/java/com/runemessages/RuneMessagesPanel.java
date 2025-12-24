@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -36,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -56,9 +58,6 @@ public class RuneMessagesPanel extends PluginPanel
 	private static final int MAX_MESSAGE_LENGTH = 100;
 	private static final Map<String, String[]> WORD_CATEGORIES = new LinkedHashMap<>();
 
-	private JLabel apiKeyValueLabel;
-	private JLabel usernameValueLabel;
-
 	static
 	{
 		WORD_CATEGORIES.put("Actions", new String[] {
@@ -70,7 +69,10 @@ public class RuneMessagesPanel extends PluginPanel
 			"Pray", "Teleport", "Bank", "Trade", "Buy", "Sell", "Steal", "Pickpocket",
 			"Mine", "Chop", "Fish", "Cook", "Craft", "Smith", "Fletch", "Alch", "Splash",
 			"Hop", "Log out", "Touch grass", "Git gud", "Panic buy", "Panic sell",
-			"Trim armour", "Double money", "Trust trade", "Skull trick", "Lure"
+			"Trim armour", "Double money", "Trust trade", "Skull trick", "Lure",
+			"Try thrusting", "Try holding with both hands", "Try finger", "Offer seed",
+			"Offer pickle", "Try tongue", "Try rear", "Plunging attack", "Be wary of tight spot",
+			"Try two-handing", "Thrust from behind", "Time for rolling", "Praise", "Beg"
 		});
 		WORD_CATEGORIES.put("Directions", new String[] {
 			"ahead", "behind", "left", "right", "up", "down", "above", "below",
@@ -95,7 +97,51 @@ public class RuneMessagesPanel extends PluginPanel
 			"cow", "chicken", "rat", "spider", "snake", "wolf", "bear", "unicorn",
 			"slayer task", "clue scroll", "pet", "skilling pet", "boss pet",
 			"ironman", "HCIM", "UIM", "GIM", "pure", "main", "alt", "bot",
-			"noob", "pro", "chad", "legend", "king", "absolute unit"
+			"noob", "pro", "chad", "legend", "king", "absolute unit",
+			"hole", "but hole", "finger", "head", "rear", "chest", "rump",
+			"fatty", "plump sort", "giant", "horse", "dog", "pickle", "seed",
+			"lever", "key", "ring", "pole", "balls", "grass", "bush", "snake"
+		});
+		WORD_CATEGORIES.put("Food", new String[] {
+			"lobster", "shark", "manta ray", "anglerfish", "dark crab", "tuna", "swordfish",
+			"monkfish", "karambwan", "cooked karambwan", "sea turtle", "bass",
+			"pizza", "anchovy pizza", "pineapple pizza", "wine", "jug of wine",
+			"cake", "chocolate cake", "bread", "meat pie", "apple pie", "summer pie",
+			"potato", "baked potato", "potato with cheese", "tuna potato", "sweetcorn",
+			"cabbage", "onion", "tomato", "banana", "orange", "pineapple", "papaya",
+			"strawberry", "watermelon", "grapes", "lemon", "lime", "coconut",
+			"beer", "ale", "dwarven stout", "asgarnian ale", "wizards mind bomb",
+			"kebab", "ugthanki kebab", "super kebab", "gnome food", "gnome cocktail",
+			"purple sweets", "candy", "chocolate", "cheese", "egg", "flour", "milk"
+		});
+		WORD_CATEGORIES.put("Items", new String[] {
+			// Weapons
+			"bronze sword", "iron sword", "steel sword", "mithril sword", "adamant sword", "rune sword",
+			"dragon sword", "dragon scimitar", "dragon longsword", "dragon dagger", "dragon claws",
+			"abyssal whip", "abyssal dagger", "abyssal bludgeon", "abyssal tentacle",
+			"crossbow", "rune crossbow", "dragon crossbow", "armadyl crossbow", "zaryte crossbow",
+			"magic shortbow", "dark bow", "twisted bow", "bow of faerdhinen", "crystal bow",
+			"trident", "trident of the swamp", "sanguinesti staff", "tumeken's shadow",
+			"elder maul", "ghrazi rapier", "inquisitor's mace", "osmumten's fang",
+			"scythe of vitur", "blade of saeldor", "saradomin sword", "zamorakian spear",
+			// Armour
+			"bronze armour", "iron armour", "steel armour", "mithril armour", "adamant armour", "rune armour",
+			"dragon armour", "barrows armour", "bandos armour", "armadyl armour",
+			"torva armour", "ancestral robes", "masori armour", "virtus robes", "justiciar armour",
+			"fighter torso", "void knight", "graceful", "rogue outfit", "pyromancer",
+			// Shields
+			"dragon defender", "avernic defender", "dragonfire shield", "spectral shield", "arcane shield", "elysian shield",
+			// Accessories
+			"amulet of glory", "amulet of fury", "blood fury", "torture", "anguish", "tormented bracelet",
+			"berserker ring", "archers ring", "seers ring", "warrior ring", "ring of suffering",
+			"barrows gloves", "ferocious gloves", "zaryte vambraces",
+			// Other items
+			"spade", "rope", "lockpick", "knife", "tinderbox", "hammer", "chisel", "needle",
+			"coins", "gold bar", "diamond", "dragonstone", "onyx", "zenyte",
+			"bones", "dragon bones", "superior dragon bones", "wyvern bones",
+			"herb", "ranarr", "snapdragon", "torstol", "dwarf weed",
+			"potion", "super combat", "divine super combat", "overload", "antifire", "antivenom",
+			"rune pouch", "looting bag", "seed box", "herb sack", "gem bag", "coal bag"
 		});
 		WORD_CATEGORIES.put("OSRS", new String[] {
 			"RNG", "RNGesus", "XP", "XP waste", "efficiency", "tick perfect",
@@ -112,7 +158,17 @@ public class RuneMessagesPanel extends PluginPanel
 			"Slayer", "Konar", "Duradel", "Nieve", "Turael", "Krystilia",
 			"Runecrafting", "Agility", "Mining", "Farming", "Hunter",
 			"Bird house", "Herb run", "Tree run", "Birdhouse run",
-			"Bond", "Membership", "F2P", "P2P", "Ironman btw", "BTW"
+			"Bond", "Membership", "F2P", "P2P", "Ironman btw", "BTW",
+			"spooned", "bricked", "dry", "dry streak", "go next", "on drop rate",
+			"over drop rate", "1 kc", "pet luck", "log slot", "collection log",
+			"max cape", "quest cape", "music cape", "achievement diary",
+			"chompy hat", "golden tench", "tangleroot", "vorki", "jad pet",
+			"zuk pet", "olmlet", "lil zik", "tumeken's guardian", "smolcano",
+			"wildy", "rev caves", "corp", "nightmare", "nex", "phantom muspah",
+			"tempoross", "wintertodt", "zalcano", "puro puro", "pyramid plunder",
+			"barrows", "brothers", "blood runes", "wrath runes", "nature runes",
+			"sand casino", "duel arena RIP", "staking", "cleaned", "bank made",
+			"bank standing", "fashionscape", "drip", "BIS", "pre-BIS", "budget gear"
 		});
 		WORD_CATEGORIES.put("Feelings", new String[] {
 			"danger", "safety", "victory", "defeat", "death", "life",
@@ -173,7 +229,17 @@ public class RuneMessagesPanel extends PluginPanel
 			"bruh", "oof", "yeet", "vibe check", "no cap", "bussin",
 			"sheesh", "respectfully", "down bad", "touch grass",
 			"least insane", "most sane", "average", "enjoyer", "fan",
-			"73", "69", "420", "nice", "gamer moment", "skill issue"
+			"73", "69", "420", "nice", "gamer moment", "skill issue",
+			"KEKW", "OMEGALUL", "Sadge", "PogChamp", "Pepega", "5Head",
+			"Jebaited", "LULW", "ICANT", "Clueless", "Aware", "modCheck",
+			"Wicked", "actually", "real", "fr fr", "on god", "lowkey",
+			"highkey", "deadass", "ngl", "tbh", "idk", "idc", "smh",
+			"ratio", "L + ratio", "cope", "seethe", "mald", "touch grace",
+			"maidenless", "no maidens", "tarnished", "git gud casul",
+			"try fingers", "likely pickle", "gorgeous chest", "amazing rear",
+			"be wary of fatty", "offer rump", "ahh head", "try head",
+			"weakness: thrusting", "weakness: rear", "O you don't have the right",
+			"first off you don't have the right", "seek god", "find grace"
 		});
 		WORD_CATEGORIES.put("Connectors", new String[] {
 			"and", "or", "but", "so", "then", "therefore", "however",
@@ -204,6 +270,78 @@ public class RuneMessagesPanel extends PluginPanel
 			"Praise be", "Blessed be", "May RNG be with you", "GL HF",
 			"No pain no gain", "Risk it for the biscuit", "Send it",
 			"LEROY JENKINS", "At least I have chicken"
+		});
+		WORD_CATEGORIES.put("Insults", new String[] {
+			"noob", "scrub", "casual", "trash", "garbage", "bot",
+			"gold buyer", "RWT", "account sharer", "boosted", "carried",
+			"1 def pure brain", "smooth brain", "small brain", "no brain",
+			"skill issue", "get good", "uninstall", "go back to Lumbridge",
+			"deserved", "outplayed", "outclassed", "destroyed", "demolished",
+			"sit", "sit down", "sit kid", "stay down", "L bozo", "ratio'd",
+			"clapped", "slapped", "smacked", "deleted", "removed", "erased",
+			"embarrassing", "shameful", "pathetic", "sad", "cringe",
+			"maidenless behavior", "grass is outside", "touch grass",
+			"least skilled", "weakest", "most mid", "below average",
+			"no mechanics", "no hands", "keyboard player", "mobile gamer",
+			"cope harder", "seethe more", "mald", "rent free", "living in your head",
+			"free", "freebie", "thanks for the loot", "my loot now",
+			"log out", "hop worlds", "wrong neighborhood", "my world"
+		});
+		WORD_CATEGORIES.put("Encouragement", new String[] {
+			"You got this", "Believe in yourself", "You're doing great",
+			"Keep grinding", "Stay focused", "Almost there", "So close",
+			"One more try", "Never give up", "You can do it", "I believe",
+			"Respect", "Well played", "Nice try", "Good effort", "Good attempt",
+			"You'll get it", "Next time", "Go again", "Run it back",
+			"Stay strong", "Keep going", "Don't stop", "Push through",
+			"Worth it", "Grind pays off", "Patience", "Trust the process",
+			"Future you will thank you", "For the log", "For the pet",
+			"For the cape", "For the glory", "For the gains", "We go jim",
+			"Strong", "Powerful", "Mighty", "Legendary", "Based", "Gigachad",
+			"King behavior", "Queen behavior", "Main character", "Built different",
+			"Different breed", "Not like the others", "One of a kind"
+		});
+		WORD_CATEGORIES.put("Cheeky", new String[] {
+			// Classic Dark Souls double meanings
+			"amazing chest ahead", "try chest", "praise the chest", "behold chest",
+			"gorgeous view ahead", "nice view", "what a view", "stunning view",
+			"try putting it in", "it won't fit", "tight fit ahead", "be wary of tight spot",
+			"seek larger one", "smaller one ahead", "long one required", "short one ahead",
+			"try licking", "licking required", "offer tongue", "use tongue",
+			"try stroking", "stroking required", "be gentle", "go slow",
+			"up and down", "in and out", "back and forth", "round and round",
+			"try pulling out", "don't pull out", "push it in", "all the way in",
+			"didn't expect hole", "likely hole", "behold hole", "seek hole",
+			"weak to rear", "try rear entry", "attacking from behind", "behind is weak",
+			"plump sort ahead", "fatty ahead", "be wary of fatty", "seek fatty",
+			"time for mount", "mounting required", "try mounting", "be wary of mounting",
+			"try using both hands", "both hands required", "two hands ahead",
+			"time to get wet", "getting wet ahead", "moisture ahead", "slippery ahead",
+			"praise the rump", "behold rump", "gorgeous rump", "seek rump",
+			"time for seed", "offer seed", "seed required", "plant seed",
+			"time for bone", "bone required", "big bone ahead", "seek bone",
+			"time for eating out", "eating out ahead", "devouring ahead",
+			"be wary of snake", "long snake ahead", "big snake", "one-eyed snake",
+			"try head", "head required", "seek head", "offer head",
+			"be wary of balls", "two balls ahead", "blue balls", "seek balls",
+			"pole ahead", "grab pole", "long pole", "try pole",
+			"time for wood", "wood required", "morning wood", "hard wood",
+			// OSRS specific innuendos
+			"examine my dragon", "wanna see my whip", "nice tentacle", "show me your staff",
+			"check out my d long", "nice d scim", "grab my d pick", "examine my maul",
+			"come to my POH", "visit my house", "use my altar", "enter my dungeon",
+			"explore my cave", "I've got a big sack", "empty my sack", "fill my bag",
+			"grinding bones all day", "give me your bone", "need bone service",
+			"handling my tool", "polish my armor", "trim my armor for free",
+			"show me your spec", "nice 2h you got there", "that's a big one",
+			"let's see your shaft", "give me your essence", "seeking essence",
+			"come use my pool", "restore at my house", "touch my dragonfire shield",
+			"feel my barrows", "nice torso", "show me your void",
+			"looking for head", "dragon head required", "KBD head wanted",
+			"that's some nice wood", "chopping wood all night", "hard oak",
+			"magic logs ahead", "seeking redwood", "got wood?",
+			"come to my bank", "show me what you got", "nice drops",
+			"thicc loot", "juicy drop", "fat stack", "show me your stack"
 		});
 		WORD_CATEGORIES.put("Famous People", new String[] {
 			// Jagex Staff
@@ -246,7 +384,7 @@ public class RuneMessagesPanel extends PluginPanel
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 
-		JLabel titleLabel = new JLabel("RuneMessages");
+		JLabel titleLabel = new JLabel("<html><center>RuneMessages<br><font size='2' color='#AAAAAA'>by LordStrange</font></center></html>");
 		titleLabel.setForeground(new Color(255, 215, 0));
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -425,100 +563,13 @@ public class RuneMessagesPanel extends PluginPanel
 		myMessagesSection.add(myMessagesHeader, BorderLayout.CENTER);
 		myMessagesSection.add(myMessagesScrollPane, BorderLayout.SOUTH);
 
-		// Account Info Section
-		JPanel accountSection = new JPanel(new BorderLayout(0, 5));
-		accountSection.setBackground(ColorScheme.DARK_GRAY_COLOR);
-		accountSection.setBorder(new EmptyBorder(10, 0, 0, 0));
-
-		JSeparator accountSeparator = new JSeparator();
-		accountSeparator.setForeground(ColorScheme.MEDIUM_GRAY_COLOR);
-
-		JLabel accountTitleLabel = new JLabel("Account Info");
-		accountTitleLabel.setForeground(new Color(255, 215, 0));
-		accountTitleLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
-
-		JPanel accountInfoPanel = new JPanel();
-		accountInfoPanel.setLayout(new BoxLayout(accountInfoPanel, BoxLayout.Y_AXIS));
-		accountInfoPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		accountInfoPanel.setBorder(BorderFactory.createCompoundBorder(
-			BorderFactory.createLineBorder(ColorScheme.MEDIUM_GRAY_COLOR),
-			BorderFactory.createEmptyBorder(8, 8, 8, 8)
-		));
-
-		JPanel usernameRow = new JPanel(new BorderLayout(5, 0));
-		usernameRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		JLabel usernameLabel = new JLabel("Username:");
-		usernameLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-		usernameValueLabel = new JLabel("Not registered");
-		usernameValueLabel.setForeground(Color.WHITE);
-		usernameRow.add(usernameLabel, BorderLayout.WEST);
-		usernameRow.add(usernameValueLabel, BorderLayout.CENTER);
-
-		JPanel apiKeyRow = new JPanel(new BorderLayout(5, 0));
-		apiKeyRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		apiKeyRow.setBorder(new EmptyBorder(5, 0, 0, 0));
-		JLabel apiKeyLabel = new JLabel("API Key:");
-		apiKeyLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-		apiKeyValueLabel = new JLabel("Not registered");
-		apiKeyValueLabel.setForeground(Color.WHITE);
-		apiKeyValueLabel.setToolTipText("Save this key to recover your account after reinstall");
-		apiKeyRow.add(apiKeyLabel, BorderLayout.WEST);
-		apiKeyRow.add(apiKeyValueLabel, BorderLayout.CENTER);
-
-		JLabel warningLabel = new JLabel("<html><i>Save your API key to recover access after reinstall!</i></html>");
-		warningLabel.setForeground(new Color(255, 200, 100));
-		warningLabel.setFont(warningLabel.getFont().deriveFont(10f));
-		warningLabel.setBorder(new EmptyBorder(8, 0, 0, 0));
-
-		accountInfoPanel.add(usernameRow);
-		accountInfoPanel.add(apiKeyRow);
-		accountInfoPanel.add(warningLabel);
-
-		accountSection.add(accountSeparator, BorderLayout.NORTH);
-		accountSection.add(accountTitleLabel, BorderLayout.CENTER);
-		accountSection.add(accountInfoPanel, BorderLayout.SOUTH);
-
-		// Bottom wrapper for My Messages and Account Info
-		JPanel bottomWrapper = new JPanel();
-		bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
-		bottomWrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
-		bottomWrapper.add(myMessagesSection);
-		bottomWrapper.add(accountSection);
-
 		JPanel mainWrapper = new JPanel(new BorderLayout());
 		mainWrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		mainWrapper.add(contentPanel, BorderLayout.CENTER);
-		mainWrapper.add(bottomWrapper, BorderLayout.SOUTH);
+		mainWrapper.add(myMessagesSection, BorderLayout.SOUTH);
 
 		add(titleLabel, BorderLayout.NORTH);
 		add(mainWrapper, BorderLayout.CENTER);
-
-		// Initial update of account info
-		updateAccountInfo();
-	}
-
-	public void updateAccountInfo() {
-		String apiKey = plugin.getMessageService().getApiKey();
-		String username = plugin.getCurrentPlayerName();
-
-		if (apiKey != null && !apiKey.isEmpty()) {
-			// Show first 8 and last 4 characters for security
-			if (apiKey.length() > 12) {
-				apiKeyValueLabel.setText(apiKey.substring(0, 8) + "..." + apiKey.substring(apiKey.length() - 4));
-			} else {
-				apiKeyValueLabel.setText(apiKey);
-			}
-			apiKeyValueLabel.setToolTipText(apiKey + " (click to copy - save this key!)");
-		} else {
-			apiKeyValueLabel.setText("Not registered");
-			apiKeyValueLabel.setToolTipText("Log in to register automatically");
-		}
-
-		if (username != null && !username.isEmpty()) {
-			usernameValueLabel.setText(username);
-		} else {
-			usernameValueLabel.setText("Not logged in");
-		}
 	}
 
 	private void filterWords() {
@@ -610,43 +661,64 @@ public class RuneMessagesPanel extends PluginPanel
 	}
 
 	private JPanel createMessageEntry(MessageData message) {
-		JPanel entry = new JPanel(new BorderLayout(5, 2));
+		JPanel entry = new JPanel(new BorderLayout(3, 2));
 		entry.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		entry.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorScheme.MEDIUM_GRAY_COLOR), BorderFactory.createEmptyBorder(5, 8, 5, 8)));
+		entry.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createLineBorder(ColorScheme.MEDIUM_GRAY_COLOR),
+			BorderFactory.createEmptyBorder(5, 5, 5, 5)
+		));
 		entry.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-		entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+		entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 75));
+
+		// Message text
 		String msgText = message.getMessage();
-		if (msgText.length() > 35) msgText = msgText.substring(0, 32) + "...";
+		if (msgText.length() > 25) msgText = msgText.substring(0, 22) + "...";
 		JLabel messageLabel = new JLabel("\"" + msgText + "\"");
 		messageLabel.setForeground(new Color(255, 215, 0));
-		JLabel locationLabel = new JLabel("World: " + message.getWorldId() + " | Region: " + message.getRegionId());
+		messageLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+
+		// Location info
+		JLabel locationLabel = new JLabel("World " + message.getWorldId() + " | Region " + message.getRegionId());
 		locationLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-		locationLabel.setFont(locationLabel.getFont().deriveFont(10f));
-		JPanel rightPanel = new JPanel();
-		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-		rightPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		JPanel votesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-		votesPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		JLabel thumbsUpLabel = new JLabel("\u25B2 " + message.getThumbsUp());
+		locationLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+
+		// Votes display
+		JLabel thumbsUpLabel = new JLabel("\u25B2" + message.getThumbsUp());
 		thumbsUpLabel.setForeground(new Color(50, 205, 50));
-		JLabel thumbsDownLabel = new JLabel("\u25BC " + message.getThumbsDown());
+		JLabel thumbsDownLabel = new JLabel("\u25BC" + message.getThumbsDown());
 		thumbsDownLabel.setForeground(new Color(220, 20, 60));
-		votesPanel.add(thumbsUpLabel); votesPanel.add(thumbsDownLabel);
-		JButton deleteButton = new JButton("Delete");
-		deleteButton.setBackground(new Color(120, 40, 40));
-		deleteButton.setForeground(Color.WHITE);
-		deleteButton.setFocusPainted(false);
-		deleteButton.setFont(deleteButton.getFont().deriveFont(10f));
-		deleteButton.setPreferredSize(new Dimension(60, 20));
-		deleteButton.addActionListener(e -> deleteMessage(message));
-		JPanel deletePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 2));
-		deletePanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		deletePanel.add(deleteButton);
-		rightPanel.add(votesPanel); rightPanel.add(deletePanel);
+
+		JPanel votesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+		votesPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		votesPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		votesPanel.add(thumbsUpLabel);
+		votesPanel.add(thumbsDownLabel);
+
+		// Left panel - message, location, votes stacked vertically
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 		leftPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		leftPanel.add(messageLabel); leftPanel.add(locationLabel);
+		leftPanel.add(messageLabel);
+		leftPanel.add(locationLabel);
+		leftPanel.add(votesPanel);
+
+		// Delete button
+		JButton deleteButton = new JButton("X");
+		deleteButton.setBackground(new Color(120, 40, 40));
+		deleteButton.setForeground(Color.WHITE);
+		deleteButton.setFocusPainted(false);
+		deleteButton.setFont(deleteButton.getFont().deriveFont(12f).deriveFont(java.awt.Font.BOLD));
+		deleteButton.setPreferredSize(new Dimension(32, 32));
+		deleteButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+		deleteButton.setToolTipText("Delete message");
+		deleteButton.addActionListener(e -> deleteMessage(message));
+
+		// Right panel - delete button centered vertically
+		JPanel rightPanel = new JPanel(new GridBagLayout());
+		rightPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		rightPanel.setPreferredSize(new Dimension(40, 60));
+		rightPanel.add(deleteButton);
+
 		entry.add(leftPanel, BorderLayout.CENTER);
 		entry.add(rightPanel, BorderLayout.EAST);
 		return entry;
