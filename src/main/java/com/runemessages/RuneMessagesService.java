@@ -200,17 +200,19 @@ public class RuneMessagesService
 		return future;
 	}
 
-	public CompletableFuture<List<MessageData>> getAuthorMessagesInWorld(int worldId, String author)
+	public CompletableFuture<List<MessageData>> getAllAuthorMessages()
 	{
 		CompletableFuture<List<MessageData>> future = new CompletableFuture<>();
 
 		if (apiKey == null || apiKey.isEmpty())
 		{
+			log.warn("getAllAuthorMessages: No API key set");
 			future.complete(new ArrayList<>());
 			return future;
 		}
 
-		String url = API_URL + "/messages/mine?worldId=" + worldId;
+		String url = API_URL + "/messages/mine";
+		log.debug("Fetching all author messages from: {}", url);
 
 		Request request = new Request.Builder()
 			.url(url)
@@ -234,12 +236,15 @@ public class RuneMessagesService
 				{
 					if (!response.isSuccessful())
 					{
+						log.warn("getAllAuthorMessages failed: HTTP {}", response.code());
 						future.complete(new ArrayList<>());
 						return;
 					}
 
 					String responseBody = response.body().string();
+					log.debug("getAllAuthorMessages response: {}", responseBody);
 					List<MessageData> messages = parseMessageArray(responseBody);
+					log.debug("Parsed {} messages from /messages/mine", messages.size());
 					future.complete(messages);
 				}
 				finally

@@ -594,16 +594,15 @@ public class RuneMessagesPanel extends PluginPanel
 	private void cancel() { messageInput.setText(""); updateCharCount(); plugin.closeMessagePanel(); }
 
 	private void refreshMyMessages() {
-		int worldId = plugin.getCurrentWorldId();
 		String playerName = plugin.getCurrentPlayerName();
 		if (playerName == null || playerName.isEmpty()) {
 			myMessagesPanel.removeAll(); myMessagesStatusLabel.setText("Not logged in"); myMessagesPanel.add(myMessagesStatusLabel); myMessagesPanel.revalidate(); myMessagesPanel.repaint(); return;
 		}
 		myMessagesPanel.removeAll(); myMessagesStatusLabel.setText("Loading..."); myMessagesPanel.add(myMessagesStatusLabel); myMessagesPanel.revalidate(); myMessagesPanel.repaint();
-		plugin.getMessageService().getAuthorMessagesInWorld(worldId, playerName)
+		plugin.getMessageService().getAllAuthorMessages()
 			.thenAccept(messages -> SwingUtilities.invokeLater(() -> {
 				myMessagesPanel.removeAll();
-				if (messages.isEmpty()) { myMessagesStatusLabel.setText("No messages in this world"); myMessagesPanel.add(myMessagesStatusLabel); }
+				if (messages.isEmpty()) { myMessagesStatusLabel.setText("No messages found"); myMessagesPanel.add(myMessagesStatusLabel); }
 				else { for (MessageData msg : messages) myMessagesPanel.add(createMessageEntry(msg)); }
 				myMessagesPanel.revalidate(); myMessagesPanel.repaint();
 			}))
@@ -620,7 +619,7 @@ public class RuneMessagesPanel extends PluginPanel
 		if (msgText.length() > 35) msgText = msgText.substring(0, 32) + "...";
 		JLabel messageLabel = new JLabel("\"" + msgText + "\"");
 		messageLabel.setForeground(new Color(255, 215, 0));
-		JLabel locationLabel = new JLabel("Region: " + message.getRegionId());
+		JLabel locationLabel = new JLabel("World: " + message.getWorldId() + " | Region: " + message.getRegionId());
 		locationLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
 		locationLabel.setFont(locationLabel.getFont().deriveFont(10f));
 		JPanel rightPanel = new JPanel();

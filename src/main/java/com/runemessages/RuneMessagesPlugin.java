@@ -271,6 +271,52 @@ public class RuneMessagesPlugin extends Plugin
 				loadMessagesForRegion(worldId, region);
 			}
 		}
+
+		// Re-spawn graves that went out of view and came back
+		refreshGraves();
+	}
+
+	private void refreshGraves()
+	{
+		for (Map.Entry<String, MessageData> entry : messageDataMap.entrySet())
+		{
+			String messageId = entry.getKey();
+			MessageData message = entry.getValue();
+
+			RuneLiteObject existingGrave = spawnedGraves.get(messageId);
+
+			// Check if grave needs to be re-spawned
+			WorldPoint worldPoint = new WorldPoint(message.getX(), message.getY(), message.getPlane());
+			LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+
+			if (localPoint == null)
+			{
+				// Location not in view - deactivate if active
+				if (existingGrave != null && existingGrave.isActive())
+				{
+					existingGrave.setActive(false);
+				}
+			}
+			else
+			{
+				// Location is in view
+				if (existingGrave == null || !existingGrave.isActive())
+				{
+					// Need to re-spawn
+					if (existingGrave != null)
+					{
+						existingGrave.setActive(false);
+						spawnedGraves.remove(messageId);
+					}
+					spawnGrave(message);
+				}
+				else
+				{
+					// Grave exists and is active - update location in case it shifted
+					existingGrave.setLocation(localPoint, message.getPlane());
+				}
+			}
+		}
 	}
 
 	private void tryRegister()
