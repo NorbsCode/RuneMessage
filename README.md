@@ -69,7 +69,7 @@ When you enter a region, messages are loaded using this algorithm:
 
 1. **Your own messages** - Always displayed first (no limit)
 2. **Top 10 voted messages** - The 10 highest-voted messages (thumbsUp - thumbsDown) always appear
-3. **Random selection** - Additional messages are randomly selected from the remaining pool (up to 50 total per region)
+3. **Random selection** - Additional messages are randomly selected from the remaining pool (up to 20 total per region)
 
 This ensures:
 - Popular, helpful messages stay visible
