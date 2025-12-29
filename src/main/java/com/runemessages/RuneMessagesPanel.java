@@ -83,7 +83,7 @@ public class RuneMessagesPanel extends PluginPanel
 			"at Lumbridge", "at Varrock", "at Falador", "at Camelot", "at Ardougne",
 			"in the Wilderness", "at the G.E.", "at the Grand Exchange", "Grand Exchange",
 			"at the bank", "in the dungeon", "at the altar", "by the fountain",
-			"near the tree", "by the rocks"
+			"near the tree", "by the rocks", "on the wiki"
 		});
 		WORD_CATEGORIES.put("Things", new String[] {
 			"enemy", "enemies", "boss", "monster", "creature", "NPC", "player",
@@ -100,7 +100,7 @@ public class RuneMessagesPanel extends PluginPanel
 			"noob", "pro", "chad", "legend", "king", "absolute unit",
 			"hole", "but hole", "finger", "head", "rear", "chest", "rump",
 			"fatty", "plump sort", "giant", "horse", "dog", "pickle", "seed",
-			"lever", "key", "ring", "pole", "balls", "grass", "bush", "snake"
+			"lever", "key", "ring", "pole", "balls", "grass", "bush", "snake", "wiki"
 		});
 		WORD_CATEGORIES.put("Food", new String[] {
 			"lobster", "shark", "manta ray", "anglerfish", "dark crab", "tuna", "swordfish",
