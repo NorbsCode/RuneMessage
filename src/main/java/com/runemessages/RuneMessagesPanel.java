@@ -146,7 +146,7 @@ public class RuneMessagesPanel extends PluginPanel
 		WORD_CATEGORIES.put("OSRS", new String[] {
 			"RNG", "RNGesus", "XP", "XP waste", "efficiency", "tick perfect",
 			"one tick", "two tick", "three tick", "prayer flick", "lazy flick",
-			"spec", "DPS", "max hit", "accuracy", "defence", "prayer",
+			"spec", "strategy", "DPS", "max hit", "accuracy", "defence", "prayer",
 			"Bandos", "Armadyl", "Zamorak", "Saradomin", "Guthix", "Zaros",
 			"AGS", "BGS", "SGS", "ZGS", "Godsword", "Scythe", "Tbow", "Bowfa",
 			"Blowpipe", "Whip", "Tentacle", "Rapier", "Mace", "Fang",
