@@ -53,15 +53,13 @@ The API key can be found in the plugin settings under the "Account" section.
 
 https://github.com/user-attachments/assets/08dec20e-98b0-4d3e-b086-9f694d926162
 
-
-
 ## Rate Limits
 
 To keep things fair and prevent spam:
 
 | Limit | Amount |
 |-------|--------|
-| Messages per region (chunk) | 1 |
+| Messages per 64x64 region | 1 |
 | Messages per world | 5 |
 | Max characters per message | 100 |
 
